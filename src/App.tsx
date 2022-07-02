@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import VirtualScroller, {
+  DefaultSettingsType,
+  Item,
+} from "./components/VirtualScroller";
 
-function App() {
+const defaultSettings: DefaultSettingsType = {
+  minIndex: -1000,
+  maxIndex: 10000,
+  startIndex: 1,
+  itemHeightPx: 40,
+  amount: 12,
+  tolerance: 4,
+};
+
+const getData = (offset: number, amount: number): Item[] => {
+  const data = [];
+  const start = Math.max(defaultSettings.minIndex, offset);
+  const end = Math.min(offset + amount - 1, defaultSettings.maxIndex);
+
+  if (start <= end) {
+    for (let i = start; i <= end; i++) {
+      data.push({ i, content: `I am data no. ${i}` });
+    }
+  }
+
+  return data;
+};
+
+const App = () => {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <VirtualScroller
+        getData={getData}
+        defaultSettings={defaultSettings}
+      ></VirtualScroller>
     </div>
   );
-}
+};
 
 export default App;
