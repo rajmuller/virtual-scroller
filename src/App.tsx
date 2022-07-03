@@ -5,9 +5,10 @@ import VirtualScroller, {
 } from "./components/VirtualScroller";
 
 const defaultSettings: DefaultSettingsType = {
-  minIndex: -1000,
-  maxIndex: 10000,
-  startIndex: 1,
+  minIndex: -5000,
+  maxIndex: 5000,
+  startIndex: 0,
+  // should be equal to the height in the css .item height
   itemHeightPx: 40,
   amount: 12,
   tolerance: 4,

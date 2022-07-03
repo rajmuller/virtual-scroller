@@ -15,14 +15,14 @@ export type Item = {
 };
 
 type ScrollerState = {
-  viewportHeight: number;
-  totalHeight: number;
-  toleranceHeight: number;
+  viewportHeightPx: number;
+  totalHeightPx: number;
+  toleranceHeightPx: number;
   bufferHeight: number;
   bufferedItems: number;
-  topPaddingHeight: number;
-  bottomPaddingHeight: number;
-  initialPosition: number;
+  topPaddingHeightPx: number;
+  bottomPaddingHeightPx: number;
+  initialPositionPx: number;
   data: Item[];
 };
 
@@ -41,33 +41,33 @@ const setInitialScrollerState = ({
   tolerance,
 }: DefaultSettingsType): ScrollerState => {
   // 1) height of the visible part of the viewport (px)
-  const viewportHeight = amount * itemHeightPx;
+  const viewportHeightPx = amount * itemHeightPx;
   // 2) total height of rendered and virtualized items (px)
-  const totalHeight = (maxIndex - minIndex + 1) * itemHeightPx;
+  const totalHeightPx = (maxIndex - minIndex + 1) * itemHeightPx;
   // 3) single viewport outlet height, filled with rendered but invisible rows (px)
-  const toleranceHeight = tolerance * itemHeightPx;
+  const toleranceHeightPx = tolerance * itemHeightPx;
   // 4) all rendered rows height, visible part + invisible outlets (px)
-  const bufferHeight = viewportHeight + 2 * toleranceHeight;
+  const bufferHeight = viewportHeightPx + 2 * toleranceHeightPx;
   // 5) number of items to be rendered, buffered dataset length (pcs)
   const bufferedItems = amount + 2 * tolerance;
   // 6) how many items will be virtualized above (pcs)
   const itemsAbove = startIndex - tolerance - minIndex;
   // 7) initial height of the top padding element (px)
-  const topPaddingHeight = itemsAbove * itemHeightPx;
+  const topPaddingHeightPx = itemsAbove * itemHeightPx;
   // 8) initial height of the bottom padding element (px)
-  const bottomPaddingHeight = totalHeight - topPaddingHeight;
+  const bottomPaddingHeightPx = totalHeightPx - topPaddingHeightPx;
   // 9) initial scroll position (px)
-  const initialPosition = topPaddingHeight + toleranceHeight;
+  const initialPositionPx = topPaddingHeightPx + toleranceHeightPx;
   // initial state object
   return {
-    viewportHeight,
-    totalHeight,
-    toleranceHeight,
+    viewportHeightPx,
+    totalHeightPx,
+    toleranceHeightPx,
     bufferHeight,
     bufferedItems,
-    topPaddingHeight,
-    bottomPaddingHeight,
-    initialPosition,
+    topPaddingHeightPx,
+    bottomPaddingHeightPx,
+    initialPositionPx,
     data: [],
   };
 };
@@ -88,13 +88,13 @@ const VirtualScroller = ({
 
   const { minIndex, itemHeightPx } = defaultSettings;
   const {
-    toleranceHeight,
+    toleranceHeightPx,
     bufferedItems,
-    totalHeight,
-    initialPosition,
-    viewportHeight,
-    topPaddingHeight,
-    bottomPaddingHeight,
+    totalHeightPx,
+    initialPositionPx,
+    viewportHeightPx,
+    topPaddingHeightPx,
+    bottomPaddingHeightPx,
     data,
   } = scrollerState;
 
@@ -103,20 +103,20 @@ const VirtualScroller = ({
     ({ target: { scrollTop } }: any) => {
       console.log({ scrollTop });
       // const index =
-      //   minIndex + Math.floor((scrollTop - toleranceHeight) / itemHeightPx);
+      //   minIndex + Math.floor((scrollTop - toleranceHeightPx) / itemHeightPx);
       const index =
-        minIndex + Math.floor((scrollTop - toleranceHeight) / itemHeightPx);
+        minIndex + Math.floor((scrollTop - toleranceHeightPx) / itemHeightPx);
       const data = getData(index, bufferedItems);
-      const topPaddingHeight = Math.max((index - minIndex) * itemHeightPx, 0);
-      const bottomPaddingHeight = Math.max(
-        totalHeight - topPaddingHeight - data.length * itemHeightPx,
+      const topPaddingHeightPx = Math.max((index - minIndex) * itemHeightPx, 0);
+      const bottomPaddingHeightPx = Math.max(
+        totalHeightPx - topPaddingHeightPx - data.length * itemHeightPx,
         0
       );
 
       setScrollerState({
         ...scrollerState,
-        topPaddingHeight,
-        bottomPaddingHeight,
+        topPaddingHeightPx,
+        bottomPaddingHeightPx,
         data,
       });
     },
@@ -126,16 +126,16 @@ const VirtualScroller = ({
       itemHeightPx,
       minIndex,
       scrollerState,
-      toleranceHeight,
-      totalHeight,
+      toleranceHeightPx,
+      totalHeightPx,
     ]
   );
 
   useEffect(() => {
     if (viewportEl.current) {
-      viewportEl.current.scrollTop = initialPosition;
+      viewportEl.current.scrollTop = initialPositionPx;
 
-      if (!initialPosition) {
+      if (!initialPositionPx) {
         onScroll({ target: { scrollTop: 0 } });
       }
     }
@@ -146,14 +146,14 @@ const VirtualScroller = ({
     <div
       ref={viewportEl}
       className="viewport"
-      style={{ height: viewportHeight }}
+      style={{ height: viewportHeightPx }}
       onScroll={onScroll}
     >
-      <div style={{ height: topPaddingHeight }} />
+      <div style={{ height: topPaddingHeightPx }} />
       {data.map((item) => (
         <Row key={item.i} item={item} />
       ))}
-      <div style={{ height: bottomPaddingHeight }} />
+      <div style={{ height: bottomPaddingHeightPx }} />
     </div>
   );
 };
